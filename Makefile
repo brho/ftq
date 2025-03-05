@@ -7,9 +7,9 @@ ACFLAGS ?= -Wall -O2 -Dros
 LIBS ?=
 LDFLAGS ?= $(USER_OPT)
 
-PHONY = core linux akaros illumos clean
+PHONY = core linux akaros illumos dummy_os clean
 
-all: linux
+all: linux dummy_os
 
 core:
 	$(CROSS)$(CC) $(CFLAGS) -falign-functions=4096 -falign-loops=8 -c ftqcore.c -o ftqcore.o
@@ -27,8 +27,12 @@ akaros: core
 illumos: core
 	$(CROSS)$(CC) $(CFLAGS) -Wall ftqcore.o ftq.c illumos.c -o ftq.illumos -lpthread
 
+# Probably won't run: OS stuff is stubbed out
+dummy_os: core
+	$(CROSS)$(CC) $(CFLAGS) -Wall ftqcore.o ftq.c dummy_os.c -o ftq.dummy_os -lpthread
+
 clean:
-	rm -f *.o t_ftq ftq ftq.linux ftq.static.linux ftq.akaros ftq.illumos *~
+	rm -f *.o t_ftq ftq ftq.linux ftq.static.linux ftq.akaros ftq.illumos ftq.dummy_os *~
 
 mpiftq:mpiftq.c ftq.h
 	mpicc -o mpiftq mpiftq.c
